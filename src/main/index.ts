@@ -189,6 +189,10 @@ function createTray(): void {
       label: '打开主窗口',
       click: () => showMainWindow(),
     },
+    {
+      label: '检查更新',
+      click: () => autoUpdater.checkForUpdatesAndNotify(),
+    },
     { type: 'separator' },
     {
       label: '退出',
@@ -272,6 +276,11 @@ app.whenReady().then(async () => {
     settingsDao.setSetting('shortcuts', JSON.stringify(custom))
     globalShortcut.unregisterAll()
     registerAllShortcuts(settingsDao.getSetting)
+  })
+
+  // Update check
+  ipcMain.handle('app:check-update', () => {
+    autoUpdater.checkForUpdatesAndNotify()
   })
 
   // Database management

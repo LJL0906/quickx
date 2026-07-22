@@ -58,4 +58,7 @@ contextBridge.exposeInMainWorld('quickx', {
   selectDbPath: () => ipcRenderer.invoke('db:selectPath'),
   exportDb: () => ipcRenderer.invoke('db:export'),
   importDb: () => ipcRenderer.invoke('db:import'),
+
+  // Update
+  checkUpdate: () => ipcRenderer.invoke('app:check-update'),
 })

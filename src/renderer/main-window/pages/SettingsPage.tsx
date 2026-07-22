@@ -103,6 +103,10 @@ export default function SettingsPage() {
         <Group title="关于">
           <Row label="版本"><span className="text-sm text-text-muted">v0.1.0</span></Row>
           <Row label="作者"><span className="text-sm text-text-muted">LJL</span></Row>
+          <Row label="更新">
+            <button onClick={() => window.quickx.checkUpdate()}
+              className="text-xs text-primary hover:text-primary-hover transition-colors font-medium">检查更新</button>
+          </Row>
         </Group>
       </div>
     </div>
