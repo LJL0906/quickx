@@ -104,7 +104,13 @@ export default function SettingsPage() {
           <Row label="版本"><span className="text-sm text-text-muted">v0.1.0</span></Row>
           <Row label="作者"><span className="text-sm text-text-muted">LJL</span></Row>
           <Row label="更新">
-            <button onClick={() => window.quickx.checkUpdate()}
+            <button onClick={async () => {
+              (window as any).__toast('正在检查更新...')
+              const r = await window.quickx.checkUpdate()
+              if (r.error) (window as any).__toast('检查失败，请稍后重试')
+              else if (r.available) (window as any).__toast('发现新版本 ' + r.version)
+              else (window as any).__toast('已是最新版本')
+            }}
               className="text-xs text-primary hover:text-primary-hover transition-colors font-medium">检查更新</button>
           </Row>
         </Group>

@@ -279,8 +279,20 @@ app.whenReady().then(async () => {
   })
 
   // Update check
-  ipcMain.handle('app:check-update', () => {
-    autoUpdater.checkForUpdatesAndNotify()
+  ipcMain.handle('app:check-update', async () => {
+    try {
+      const result = await autoUpdater.checkForUpdates()
+      if (!result || !result.updateInfo.version) {
+        console.log('[QuickX] no update available')
+        return { available: false }
+      }
+      console.log('[QuickX] update found:', result.updateInfo.version)
+      autoUpdater.downloadUpdate()
+      return { available: true, version: result.updateInfo.version }
+    } catch (err) {
+      console.error('[QuickX] update check error:', err)
+      return { available: false, error: true }
+    }
   })
 
   // Database management
@@ -383,8 +395,10 @@ app.whenReady().then(async () => {
 
   console.log('[QuickX] ready')
 
-  // Auto updater (only in production)
-  if (!process.env.NODE_ENV || process.env.NODE_ENV !== 'development') {
+  // Auto updater: config + check on startup
+  autoUpdater.autoDownload = true
+  autoUpdater.autoInstallOnAppQuit = true
+  if (!isDev) {
     autoUpdater.checkForUpdatesAndNotify()
   }
 })

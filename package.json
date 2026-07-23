@@ -1,6 +1,6 @@
 {
   "name": "quickx",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Windows 桌面效率工具 - 快速搜索链接、笔记、代码片段、剪切板管理",
   "main": "dist/main/index.js",
   "author": "",
@@ -13,6 +13,7 @@
     "build:main": "node scripts/build-main.js",
     "build:renderer": "vite build",
     "start": "electron .",
+    "bs": "npm run build && npm run start",
     "dist": "npm run build && electron-builder",
     "dist:win": "npm run build && electron-builder --win"
   },

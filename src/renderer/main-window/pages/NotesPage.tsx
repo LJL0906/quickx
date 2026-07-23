@@ -8,7 +8,7 @@ export default function NotesPage() {
   const [notes, setNotes] = useState<NoteRow[]>([])
   const [search, setSearch] = useState('')
   const [selectedId, setSelectedId] = useState<number | null>(null)
-  const [viewMode, setViewMode] = useState<'edit' | 'preview'>('preview')
+  const [showSource, setShowSource] = useState(false)
 
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
@@ -73,7 +73,7 @@ export default function NotesPage() {
   const createNew = () => {
     if (dirty && selectedId && title.trim()) doSave()
     setSelectedId(null); setTitle(''); setContent(''); setTagsStr('')
-    setDirty(false); setViewMode('edit')
+    setDirty(false); setShowSource(true)
     setTimeout(() => titleRef.current?.focus(), 0)
   }
 
@@ -153,18 +153,12 @@ export default function NotesPage() {
       <div className="flex-1 flex flex-col min-w-0">
         {/* Toolbar */}
         <div className="flex items-center gap-2 px-4 py-2 border-b border-surface-border shrink-0">
-          <div className="flex items-center bg-surface-secondary rounded-md p-0.5 gap-0.5 shrink-0">
-            {(['edit', 'preview'] as const).map(m => (
-              <button
-                key={m}
-                onClick={() => setViewMode(m)}
-                className={`px-2.5 py-1 text-[11px] font-medium rounded transition-colors
-                  ${viewMode === m ? 'bg-white text-primary shadow-sm' : 'text-text-muted hover:text-text-secondary'}`}
-              >
-                {m === 'edit' ? '编辑' : '预览'}
-              </button>
-            ))}
-          </div>
+          <button
+            onClick={() => setShowSource(!showSource)}
+            className={`px-2.5 py-1 text-[11px] font-medium rounded-md transition-colors border
+              ${showSource ? 'bg-primary-light border-primary text-primary' : 'border-surface-border text-text-muted hover:border-primary/30'}`}>
+            源码
+          </button>
           <div className="flex-1" />
           {dirty && (
             <button onClick={doSave} className="h-7 px-3 bg-primary text-white text-[11px] font-medium rounded-md hover:bg-primary-hover transition-colors">
@@ -187,7 +181,7 @@ export default function NotesPage() {
 
         {/* Content area */}
         <div className="flex-1 overflow-hidden">
-          {viewMode === 'edit' ? (
+          {showSource ? (
             <textarea
               value={content}
               onChange={e => { setContent(e.target.value); setDirty(true) }}
@@ -216,6 +210,10 @@ export default function NotesPage() {
             placeholder="添加标签..."
             className="flex-1 text-xs text-text-secondary bg-transparent outline-none placeholder-text-muted"
           />
+          <button
+            onClick={() => setShowSource(!showSource)}
+            className="px-2 py-0.5 text-[10px] font-medium rounded border transition-colors "
+          >源码</button>
           <span className="text-[10px] text-text-muted/70">{dirty ? '未保存' : '已保存'}</span>
         </div>
       </div>
