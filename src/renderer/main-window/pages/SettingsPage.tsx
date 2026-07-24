@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 const LABELS: Record<string, string> = {
   search: '搜索浮窗', links: '链接管理', notes: '笔记',
   snippets: '代码片段', clipboard: '剪切板', settings: '设置',
+  screenshotTranslate: '截图翻译', translateInput: '输入翻译',
 }
 
 export default function SettingsPage() {
@@ -11,6 +12,19 @@ export default function SettingsPage() {
   const [shortcuts, setShortcuts] = useState<Record<string, string>>({})
   const [recording, setRecording] = useState<string | null>(null)
   const [dbPath, setDbPath] = useState('')
+  const [appVersion, setAppVersion] = useState('')
+
+  // Translation API config
+  const [baiduAppId, setBaiduAppId] = useState('')
+  const [baiduSecretKey, setBaiduSecretKey] = useState('')
+
+  // OCR API config
+  const [ocrApiKey, setOcrApiKey] = useState('')
+  const [ocrSecretKey, setOcrSecretKey] = useState('')
+
+  // Window size
+  const [mainWinWidth, setMainWinWidth] = useState(1200)
+  const [mainWinHeight, setMainWinHeight] = useState(900)
 
   useEffect(() => {
     (async () => {
@@ -19,6 +33,18 @@ export default function SettingsPage() {
         setClipboardEnabled((await window.quickx.getSetting('clipboardEnabled')) !== 'false')
         setShortcuts(await window.quickx.getShortcuts())
         setDbPath(await window.quickx.getDbPath())
+        // Translation config
+        setBaiduAppId((await window.quickx.getSetting('baiduAppId')) as string || '')
+        setBaiduSecretKey((await window.quickx.getSetting('baiduSecretKey')) as string || '')
+        // OCR config
+        setOcrApiKey((await window.quickx.getSetting('ocrApiKey')) as string || '')
+        setOcrSecretKey((await window.quickx.getSetting('ocrSecretKey')) as string || '')
+        // Window size
+        const w = await window.quickx.getSetting('mainWinWidth')
+        const h = await window.quickx.getSetting('mainWinHeight')
+        if (w) setMainWinWidth(Number(w))
+        if (h) setMainWinHeight(Number(h))
+        setAppVersion(await window.quickx.getAppVersion())
       } catch {}
     })()
   }, [])
@@ -68,6 +94,25 @@ export default function SettingsPage() {
           <Row label="开机自启动" desc="系统启动时自动运行 QuickX">
             <Toggle value={autoStart} onChange={async (v) => { setAutoStart(v); await window.quickx.setSetting('autoStart', String(v)) }} />
           </Row>
+          <Row label="窗口宽度" desc="主窗口默认宽度（像素）">
+            <input type="number" value={mainWinWidth} onChange={(e) => setMainWinWidth(Number(e.target.value))}
+              onBlur={() => window.quickx.setSetting('mainWinWidth', String(mainWinWidth))}
+              className="text-xs px-2 py-1 rounded border border-surface-border bg-surface-secondary w-20 outline-none focus:border-primary" />
+          </Row>
+          <Row label="窗口高度" desc="主窗口默认高度（像素）">
+            <input type="number" value={mainWinHeight} onChange={(e) => setMainWinHeight(Number(e.target.value))}
+              onBlur={() => window.quickx.setSetting('mainWinHeight', String(mainWinHeight))}
+              className="text-xs px-2 py-1 rounded border border-surface-border bg-surface-secondary w-20 outline-none focus:border-primary" />
+          </Row>
+          <Row label="重新启动" desc="修改窗口尺寸后需重启生效">
+            <button onClick={async () => {
+              if (!confirm('确定重新启动 QuickX？')) return
+              await window.quickx.restartApp()
+            }}
+              className="text-xs px-3 py-1 rounded border border-primary/30 text-primary hover:bg-primary-light transition-colors font-medium">
+              重新启动
+            </button>
+          </Row>
         </Group>
 
         {/* Clipboard */}
@@ -77,6 +122,37 @@ export default function SettingsPage() {
           </Row>
           <Row label="历史上限">
             <span className="text-sm text-text-muted">200 条</span>
+          </Row>
+        </Group>
+
+        {/* Translate: Baidu */}
+        <Group title="翻译 API — 百度翻译">
+          <Row label="APP ID" desc="百度翻译开放平台申请的 APP ID">
+            <input type="password" value={baiduAppId} onChange={(e) => setBaiduAppId(e.target.value)}
+              onBlur={() => window.quickx.setSetting('baiduAppId', baiduAppId)}
+              placeholder="输入 APP ID" className="text-xs px-2 py-1 rounded border border-surface-border bg-surface-secondary w-40 outline-none focus:border-primary" />
+          </Row>
+          <Row label="密钥" desc="百度翻译开放平台申请的密钥">
+            <input type="password" value={baiduSecretKey} onChange={(e) => setBaiduSecretKey(e.target.value)}
+              onBlur={() => window.quickx.setSetting('baiduSecretKey', baiduSecretKey)}
+              placeholder="输入密钥" className="text-xs px-2 py-1 rounded border border-surface-border bg-surface-secondary w-40 outline-none focus:border-primary" />
+          </Row>
+        </Group>
+
+        {/* OCR — 百度 OCR */}
+        <Group title="翻译 API — 截图 OCR">
+          <Row label="API Key" desc="百度 AI 开放平台 OCR 应用的 API Key">
+            <input type="password" value={ocrApiKey} onChange={(e) => setOcrApiKey(e.target.value)}
+              onBlur={() => window.quickx.setSetting('ocrApiKey', ocrApiKey)}
+              placeholder="输入 API Key" className="text-xs px-2 py-1 rounded border border-surface-border bg-surface-secondary w-40 outline-none focus:border-primary" />
+          </Row>
+          <Row label="Secret Key" desc="百度 AI 开放平台 OCR 应用的 Secret Key">
+            <input type="password" value={ocrSecretKey} onChange={(e) => setOcrSecretKey(e.target.value)}
+              onBlur={() => window.quickx.setSetting('ocrSecretKey', ocrSecretKey)}
+              placeholder="输入 Secret Key" className="text-xs px-2 py-1 rounded border border-surface-border bg-surface-secondary w-40 outline-none focus:border-primary" />
+          </Row>
+          <Row label="免费额度" desc="通用文字识别，每天免费 500 次">
+            <span className="text-xs text-green-600 font-medium">500 次/天</span>
           </Row>
         </Group>
 
@@ -101,7 +177,7 @@ export default function SettingsPage() {
 
         {/* About */}
         <Group title="关于">
-          <Row label="版本"><span className="text-sm text-text-muted">v0.1.0</span></Row>
+          <Row label="版本"><span className="text-sm text-text-muted">v{appVersion || '...'}</span></Row>
           <Row label="作者"><span className="text-sm text-text-muted">LJL</span></Row>
           <Row label="更新">
             <button onClick={async () => {

@@ -38,12 +38,21 @@ export interface ClipboardItem {
 }
 
 // ── Search Bar API ───────────────────────────────────────
+export interface TranslateResultItem {
+  from: string
+  to: string
+  src: string
+  dst: string
+}
+
 export interface SearchBarAPI {
   searchLinks: (keyword: string) => Promise<LinkItem[]>
   openLink: (url: string) => Promise<void>
   openMainWindow: () => void
   hide: () => void
   onFocusInput: (cb: () => void) => void
+  resizeSearchBar: (height: number) => void
+  translateText: (q: string, from: string, to: string) => Promise<TranslateResultItem[]>
 }
 
 // ── Main Window API ──────────────────────────────────────
@@ -80,6 +89,22 @@ export interface MainWindowAPI {
   // Settings
   getSetting: (key: string) => Promise<unknown>
   setSetting: (key: string, value: unknown) => Promise<void>
+
+  // Navigation
+  onNavigate: (cb: (tab: string) => void) => void
+
+  // Shortcuts
+  getShortcuts: () => Promise<Record<string, string>>
+  setShortcut: (action: string, key: string) => Promise<void>
+
+  // Database
+  getDbPath: () => Promise<string>
+  selectDbPath: () => Promise<string | null>
+  exportDb: () => Promise<string | null>
+  importDb: () => Promise<string | null>
+
+  // Update
+  checkUpdate: () => Promise<{ available: boolean; version?: string; error?: boolean }>
 }
 
 // ── Aliases (for components using "Row" naming) ──────────

@@ -13,6 +13,8 @@ export default defineConfig({
       input: {
         'search-bar': resolve(__dirname, 'src/renderer/search-bar/index.html'),
         'main-window': resolve(__dirname, 'src/renderer/main-window/index.html'),
+        'translate-result': resolve(__dirname, 'src/renderer/translate-result/index.html'),
+        'translate-input': resolve(__dirname, 'src/renderer/translate-input/index.html'),
       },
     },
   },

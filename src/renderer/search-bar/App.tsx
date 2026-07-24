@@ -50,6 +50,7 @@ export default function App() {
   }
 
   const hasBaidu = query.trim().length > 0
+  const hasContent = results.length > 0 || hasBaidu
   const totalOptions = results.length + (hasBaidu ? 1 : 0)
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -70,7 +71,7 @@ export default function App() {
     <div
       ref={containerRef}
       className={`bg-surface border border-[#D4D4DC] overflow-hidden transition-shadow duration-200
-        ${totalOptions > 0
+        ${hasContent
           ? 'shadow-[0_2px_6px_rgba(0,0,0,0.06),0_12px_36px_rgba(0,0,0,0.16)]'
           : 'shadow-[0_1px_3px_rgba(0,0,0,0.04),0_4px_12px_rgba(0,0,0,0.08)]'
         }`}>
@@ -91,7 +92,7 @@ export default function App() {
         </button>
       </div>
 
-      {totalOptions > 0 && (
+      {hasContent && (
         <div className="border-t border-surface-border">
           {results.map((item, i) => (
             <div key={item.id}

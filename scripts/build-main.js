@@ -13,7 +13,7 @@ async function main() {
     platform: 'node',
     target: 'node20',
     format: 'cjs',
-    external: ['electron'],
+    external: ['electron', 'sharp'],
     minify: false,
     sourcemap: true,
   })
@@ -23,6 +23,8 @@ async function main() {
     entryPoints: [
       path.join(srcDir, 'preload', 'search-bar.ts'),
       path.join(srcDir, 'preload', 'main-window.ts'),
+      path.join(srcDir, 'preload', 'translate-result.ts'),
+      path.join(srcDir, 'preload', 'translate-input.ts'),
     ],
     outdir: outDir,
     bundle: true,

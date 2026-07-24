@@ -26,6 +26,10 @@ nsis:
 
 asar: true
 
+asarUnpack:
+  - "**/node_modules/sharp/**/*"
+  - "**/node_modules/sql.js/**/*"
+
 compression: normal
 
 publish:

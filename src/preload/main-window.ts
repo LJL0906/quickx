@@ -61,4 +61,10 @@ contextBridge.exposeInMainWorld('quickx', {
 
   // Update
   checkUpdate: () => ipcRenderer.invoke('app:check-update'),
+
+  // Restart
+  restartApp: () => ipcRenderer.invoke('app:restart'),
+
+  // Version
+  getAppVersion: () => ipcRenderer.invoke('app:version'),
 })
